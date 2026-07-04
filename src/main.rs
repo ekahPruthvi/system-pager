@@ -1,3 +1,4 @@
+use gtk4::pango::BidiType::B;
 use gtk4::prelude::*;
 use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label, CssProvider};
 use gtk4::gdk::Display;
@@ -50,7 +51,13 @@ fn build_ui(app: &Application) {
         }
         
         .pgone {
-            background-color: rgba(255, 47, 189, 0.06);   
+            --color1: rgb(108, 231, 221);
+            --color2: rgb(250, 255, 178);
+            background-color: var(--color1);
+            background-image: linear-gradient(45deg, var(--color2) 25%, transparent 25%, transparent 75%, var(--color2) 75%, var(--color2)), 
+                                linear-gradient(45deg, var(--color2) 25%, var(--color1) 25%, var(--color1) 75%, var(--color2) 75%, var(--color2));
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;  
         }
 
         .jk {
@@ -69,6 +76,112 @@ fn build_ui(app: &Application) {
             transform: rotate(1.5deg);
         }
 
+        .bday {
+            font-family: 'Courier New', 'Courier', 'Monospace', monospace;
+            font-size: 11px;            
+            line-height: 1.0;         
+            letter-spacing: 0px; 
+            white-space: pre;
+            text-shadow: 
+                0px  10px 0 rgb(133, 131, 0),  0px -10px 0 rgb(133, 131, 0), 10px  0px 0 rgb(133, 131, 0), -10px  0px 0 rgb(133, 131, 0),
+                7px   7px 0 rgb(133, 131, 0), -7px   7px 0 rgb(133, 131, 0),  7px -7px 0 rgb(133, 131, 0),  -7px  -7px 0 rgb(133, 131, 0),
+                5px   9px 0 rgb(133, 131, 0), -5px   9px 0 rgb(133, 131, 0),  5px -9px 0 rgb(133, 131, 0),  -5px  -9px 0 rgb(133, 131, 0),
+                9px   5px 0 rgb(133, 131, 0), -9px   5px 0 rgb(133, 131, 0),  9px -5px 0 rgb(133, 131, 0),  -9px  -5px 0 rgb(133, 131, 0),
+                2px  10px 0 rgb(133, 131, 0), -2px  10px 0 rgb(133, 131, 0),  2px -10px 0 rgb(133, 131, 0),  -2px -10px 0 rgb(133, 131, 0),
+                10px   2px 0 rgb(133, 131, 0), -10px  2px 0 rgb(133, 131, 0), 10px -2px 0 rgb(133, 131, 0),  -10px -2px 0 rgb(133, 131, 0),
+                0px   5px 0 rgb(133, 131, 0),  0px  -5px 0 rgb(133, 131, 0),  5px  0px 0 rgb(133, 131, 0),   -5px  0px 0 rgb(133, 131, 0),
+                4px   4px 0 rgb(133, 131, 0), -4px   4px 0 rgb(133, 131, 0),  4px -4px 0 rgb(133, 131, 0),   -4px -4px 0 rgb(133, 131, 0);
+            color: #ffff00;
+            transform: rotate(-0.5deg);
+        }
+
+        .bdaybox {
+            border-radius: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.92);
+            background-color: #0f172a;
+  background-image: linear-gradient(
+      45deg,
+      rgba(59, 130, 246, 0.08) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgba(59, 130, 246, 0.08) 75%
+    ),
+    linear-gradient(
+      -45deg,
+      rgba(59, 130, 246, 0.08) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgba(59, 130, 246, 0.08) 75%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 40%,
+      rgba(99, 102, 241, 0.1) 40%,
+      rgba(99, 102, 241, 0.1) 60%,
+      transparent 60%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 40%,
+      rgba(99, 102, 241, 0.1) 40%,
+      rgba(99, 102, 241, 0.1) 60%,
+      transparent 60%
+    ),
+    radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+  background-size:
+    60px 60px,
+    60px 60px,
+    120px 120px,
+    120px 120px,
+    100% 100%;
+  background-position:
+    0 0,
+    30px 30px,
+    0 0,
+    60px 60px,
+    0 0;
+  position: relative;
+            padding: 30px 50px 30px 0px;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            transform-origin: bottom;
+            animation: scaleUpFromBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes scaleUpFromBottom {
+            from {
+                transform: scaleY(0);
+                opacity: 0;
+            }
+            to {
+                transform: scaleY(1);
+                opacity: 1;
+            }
+        }
+
+        .exp {
+            border-radius: 50px;
+            border: 1px solid rgba(219, 219, 219, 0.16);
+            background-color: rgba(36, 36, 36, 0.88);
+            padding: 10px;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            font-weight: 300;
+            font-size: 20px;
+            animation: slowFloat 4s ease-in-out infinite;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes slowFloat {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px); /* Drift upwards by 15 pixels */
+            }
+            100% {
+                transform: translateY(0px);  /* Return smoothly to starting position */
+            }
+        }
+
     ",
     );
 
@@ -80,7 +193,7 @@ fn build_ui(app: &Application) {
 
     let today = Local::now().date_naive();
 
-    if today.month() != 7 || today.day() != 4 {
+    if today.month() != 7 || today.day() < 4 {
         eprintln!("Today aint the day gng");
         exit(0);
     }
@@ -126,24 +239,79 @@ fn build_ui(app: &Application) {
         .vexpand(true)
         .hexpand(true)
         .valign(gtk4::Align::Fill)
+        .orientation(Orientation::Vertical)
         .halign(gtk4::Align::Fill)
         .css_classes(["pgone"])
+        .spacing(40)
         .visible(false)
         .build();
 
     let jk = Label::builder()
         .label("Just Kidding !!")
-        .justify(gtk4::Justification::Center)
+        .justify(gtk4::Justification::Left)
         .hexpand(true)
+        .vexpand(true)
         .css_classes(["jk"])
         .build();
 
+    let btext = Label::builder()
+        .use_markup(true)
+        .label("
+             ▄▄   ▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄    ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄  ▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄   ▄▄ ▄▄   ▄▄ ▄▄   ▄▄ 
+            █  █ █  █      █       █       █  █ █  █  █  ▄    █   █   ▄  █ █       █  █ █  █      ██      █  █ █  █  █ █  █  █ █  █  █ █  █
+            █  █▄█  █  ▄   █    ▄  █    ▄  █  █▄█  █  █ █▄█   █   █  █ █ █ █▄     ▄█  █▄█  █  ▄    █  ▄   █  █▄█  █  █▄█  █  █▄█  █  █▄█  █
+            █       █ █▄█  █   █▄█ █   █▄█ █       █  █       █   █   █▄▄█▄  █   █ █       █ █ █   █ █▄█  █       █       █       █       █
+            █   ▄   █      █    ▄▄▄█    ▄▄▄█▄     ▄█  █  ▄   ██   █    ▄▄  █ █   █ █   ▄   █ █▄█   █      █▄     ▄█▄     ▄█▄     ▄█▄     ▄█
+            █  █ █  █  ▄   █   █   █   █     █   █    █ █▄█   █   █   █  █ █ █   █ █  █ █  █       █  ▄   █ █   █   █   █   █   █   █   █  
+            █▄▄█ █▄▄█▄█ █▄▄█▄▄▄█   █▄▄▄█     █▄▄▄█    █▄▄▄▄▄▄▄█▄▄▄█▄▄▄█  █▄█ █▄▄▄█ █▄▄█ █▄▄█▄▄▄▄▄▄██▄█ █▄▄█ █▄▄▄█   █▄▄▄█   █▄▄▄█   █▄▄▄█  
+
+
+             ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ 
+            █  ▄    █  ▄    █       █
+            █ █▄█   █ █▄█   █   ▄▄▄▄█
+            █       █       █  █  ▄▄ 
+            █  ▄   ██  ▄   ██  █ █  █
+            █ █▄█   █ █▄█   █  █▄▄█ █
+            █▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█
+        ")
+        .hexpand(true)
+        .vexpand(true)
+        .css_classes(["bday"])
+        .build();
+
+    let bd_box = GtkBox::builder()
+        .hexpand(true)
+        .vexpand(true)
+        .css_classes(["bdaybox"])
+        .valign(gtk4::Align::End)
+        .halign(gtk4::Align::Center)
+        .visible(false)
+        .build();
+
+    bd_box.append(&btext);
+
+    let start = Label::builder()
+        .use_markup(true)
+        .label("USE ARROW KEYS")
+        .hexpand(true)
+        .vexpand(true)
+        .valign(gtk4::Align::Start)
+        .halign(gtk4::Align::Center)
+        .css_classes(["exp"])
+        .visible(false)
+        .build();
+
     pageone.append(&jk);
+    pageone.append(&bd_box);
+    pageone.append(&start);
 
     let jk_clone = jk.clone();
+    let btext_clone = bd_box.clone();
+    let start = start.clone();
     let hbd = move|| {
         jk_clone.set_visible(false);
-        
+        btext_clone.set_visible(true);
+        start.set_visible(true);
     };
 
     let main = GtkBox::new(Orientation::Vertical, 0);
@@ -164,11 +332,18 @@ fn build_ui(app: &Application) {
         if keyval == gtk4::gdk::Key::Return || keyval == gtk4::gdk::Key::KP_Enter {
             errorscr_clone.set_visible(false);
             pg_clone.set_visible(true);
-            std::thread::sleep(Duration::from_secs(2));
-            hbd();
+            // std::thread::sleep(Duration::from_secs(2));
+            let hbd = hbd.clone();
+            gtk4::glib::timeout_add_local(Duration::from_secs(2), move || {
+                hbd();
+                gtk4::glib::ControlFlow::Break
+            });
             gtk4::glib::Propagation::Stop
         } else if keyval == gtk4::gdk::Key::Alt_R {
             exit(0);
+        } else if keyval == gtk4::gdk::Key::downarrow {
+            
+            gtk4::glib::Propagation::Stop
         } else {
             gtk4::glib::Propagation::Proceed
         }
