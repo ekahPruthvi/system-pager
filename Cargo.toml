@@ -7,5 +7,6 @@ description = "An alternate dynamicLauncher"
 license = "GPL-3.0"
 
 [dependencies]
+chrono = "0.4.45"
 gtk4 = "0.11.4"
 gtk4-layer-shell = "0.8.0"
