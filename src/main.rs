@@ -1,10 +1,9 @@
-use gtk4::pango::BidiType::B;
 use gtk4::prelude::*;
 use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label, CssProvider};
 use gtk4::gdk::Display;
 use gtk4_layer_shell::{LayerShell, Layer, Edge};
 use std::process::exit;
-use std::{time::Duration, thread};
+use std::{time::Duration};
 use chrono::{Datelike, Local};
 
 fn main() {
@@ -60,6 +59,37 @@ fn build_ui(app: &Application) {
             background-position: 0 0, 30px 30px;  
         }
 
+        .pgtwo {
+            background:
+                linear-gradient(135deg, #4f46e5 25%, transparent 25%) -50px 0,
+                linear-gradient(225deg, #4f46e5 25%, transparent 25%) -50px 0,
+                linear-gradient(315deg, #4f46e5 25%, transparent 25%),
+                linear-gradient(45deg, #4f46e5 25%, transparent 25%),
+                linear-gradient(to bottom, #3b82f6 0%, #2563eb 100%);
+            background-size:
+                100px 100px,
+                100px 100px,
+                100px 100px,
+                100px 100px,
+                100% 100%;
+            background-color: #1d4ed8;
+        }
+
+        .godown {
+            animation: downdd 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .page {
+            background: linear-gradient(#3f87a6 10%, #ebf8e1 10%),
+            linear-gradient(to right, #ebf8e100 10%, #c73030 10% 10.2%, #ebf8e100 10.5%);
+            background-size: 100% 25px, 100% 100%;
+            background-repeat: repeat, no-repeat;
+            color: black;
+            font-family: 'Brush Script MT', 'Comic Sans MS', cursive;
+            font-size: 18px;
+            line-height: 15px;
+        }
+
         .jk {
             font-size: 55px;
             font-weight: 900;
@@ -80,8 +110,7 @@ fn build_ui(app: &Application) {
             font-family: 'Courier New', 'Courier', 'Monospace', monospace;
             font-size: 11px;            
             line-height: 1.0;         
-            letter-spacing: 0px; 
-            white-space: pre;
+            letter-spacing: 0px;
             text-shadow: 
                 0px  10px 0 rgb(133, 131, 0),  0px -10px 0 rgb(133, 131, 0), 10px  0px 0 rgb(133, 131, 0), -10px  0px 0 rgb(133, 131, 0),
                 7px   7px 0 rgb(133, 131, 0), -7px   7px 0 rgb(133, 131, 0),  7px -7px 0 rgb(133, 131, 0),  -7px  -7px 0 rgb(133, 131, 0),
@@ -99,48 +128,47 @@ fn build_ui(app: &Application) {
             border-radius: 10px;
             border: 2px solid rgba(0, 0, 0, 0.92);
             background-color: #0f172a;
-  background-image: linear-gradient(
-      45deg,
-      rgba(59, 130, 246, 0.08) 25%,
-      transparent 25%,
-      transparent 75%,
-      rgba(59, 130, 246, 0.08) 75%
-    ),
-    linear-gradient(
-      -45deg,
-      rgba(59, 130, 246, 0.08) 25%,
-      transparent 25%,
-      transparent 75%,
-      rgba(59, 130, 246, 0.08) 75%
-    ),
-    linear-gradient(
-      45deg,
-      transparent 40%,
-      rgba(99, 102, 241, 0.1) 40%,
-      rgba(99, 102, 241, 0.1) 60%,
-      transparent 60%
-    ),
-    linear-gradient(
-      -45deg,
-      transparent 40%,
-      rgba(99, 102, 241, 0.1) 40%,
-      rgba(99, 102, 241, 0.1) 60%,
-      transparent 60%
-    ),
-    radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
-  background-size:
-    60px 60px,
-    60px 60px,
-    120px 120px,
-    120px 120px,
-    100% 100%;
-  background-position:
-    0 0,
-    30px 30px,
-    0 0,
-    60px 60px,
-    0 0;
-  position: relative;
+            background-image: linear-gradient(
+                45deg,
+                rgba(59, 130, 246, 0.08) 25%,
+                transparent 25%,
+                transparent 75%,
+                rgba(59, 130, 246, 0.08) 75%
+                ),
+                linear-gradient(
+                -45deg,
+                rgba(59, 130, 246, 0.08) 25%,
+                transparent 25%,
+                transparent 75%,
+                rgba(59, 130, 246, 0.08) 75%
+                ),
+                linear-gradient(
+                45deg,
+                transparent 40%,
+                rgba(99, 102, 241, 0.1) 40%,
+                rgba(99, 102, 241, 0.1) 60%,
+                transparent 60%
+                ),
+                linear-gradient(
+                -45deg,
+                transparent 40%,
+                rgba(99, 102, 241, 0.1) 40%,
+                rgba(99, 102, 241, 0.1) 60%,
+                transparent 60%
+                ),
+                radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+            background-size:
+                60px 60px,
+                60px 60px,
+                120px 120px,
+                120px 120px,
+                100% 100%;
+            background-position:
+                0 0,
+                30px 30px,
+                0 0,
+                60px 60px,
+                0 0;
             padding: 30px 50px 30px 0px;
             box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
             transform-origin: bottom;
@@ -155,6 +183,28 @@ fn build_ui(app: &Application) {
             to {
                 transform: scaleY(1);
                 opacity: 1;
+            }
+        }
+
+        @keyframes downdd {
+            from {
+                transform: translate(0px, -100000px);
+            }
+            to {
+                transform: translate(0px, 0px);
+            }
+        }
+
+        .goup {
+            animation: updd 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes updd {
+            from {
+                transform: translate(0px, 100000px);
+            }
+            to {
+                transform: translate(0px, 0px);
             }
         }
 
@@ -314,6 +364,31 @@ fn build_ui(app: &Application) {
         start.set_visible(true);
     };
 
+    let pagetwo = GtkBox::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .valign(gtk4::Align::Fill)
+        .orientation(Orientation::Vertical)
+        .halign(gtk4::Align::Fill)
+        .css_classes(["pgtwo"])
+        .spacing(40)
+        .visible(false)
+        .build();
+
+    let pagetext = Label::builder()
+        .use_markup(true)
+        .label("muah")
+        .hexpand(true)
+        .vexpand(true)
+        .halign(gtk4::Align::Center)
+        .valign(gtk4::Align::Center)
+        .width_request(400)
+        .height_request(800)
+        .css_classes(["page"])
+        .build();
+
+    pagetwo.append(&pagetext);
+
     let main = GtkBox::new(Orientation::Vertical, 0);
     main.set_hexpand(true);
     main.set_vexpand(true);
@@ -323,11 +398,13 @@ fn build_ui(app: &Application) {
 
     main.append(&errorscr);
     main.append(&pageone);
+    main.append(&pagetwo);
 
     let controller = gtk4::EventControllerKey::new();
 
     let errorscr_clone = errorscr.clone();
     let pg_clone = pageone.clone();
+    let pgt = pagetwo.clone();
     controller.connect_key_pressed(move |_controller, keyval, _keycode, _state| {
         if keyval == gtk4::gdk::Key::Return || keyval == gtk4::gdk::Key::KP_Enter {
             errorscr_clone.set_visible(false);
@@ -341,8 +418,25 @@ fn build_ui(app: &Application) {
             gtk4::glib::Propagation::Stop
         } else if keyval == gtk4::gdk::Key::Alt_R {
             exit(0);
-        } else if keyval == gtk4::gdk::Key::downarrow {
-            
+        } else if keyval == gtk4::gdk::Key::Down {
+            if pg_clone.get_visible() {
+                pg_clone.set_visible(false);
+                pgt.set_visible(true);
+                pgt.add_css_class("godown");
+                pg_clone.remove_css_class("goup");
+            } else {
+                eprint!("bodnwqnewkic");
+            }
+            gtk4::glib::Propagation::Stop
+        } else if keyval == gtk4::gdk::Key::Up {
+            if pgt.get_visible() {
+                pg_clone.set_visible(true);
+                pg_clone.add_css_class("goup");
+                pgt.set_visible(false);
+                pgt.remove_css_class("godown");
+            } else {
+                eprint!("bodnwqnewkic");
+            }
             gtk4::glib::Propagation::Stop
         } else {
             gtk4::glib::Propagation::Proceed
