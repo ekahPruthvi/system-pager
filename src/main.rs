@@ -1,5 +1,5 @@
 use gtk4::prelude::*;
-use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label, CssProvider};
+use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label, CssProvider, Overlay};
 use gtk4::gdk::Display;
 use gtk4_layer_shell::{LayerShell, Layer, Edge};
 use std::process::exit;
@@ -13,6 +13,33 @@ fn main() {
 
     app.connect_activate(build_ui);
     app.run();
+}
+
+fn animate_switch(
+    outgoing: GtkBox,
+    outgoing_exit_class: &'static str,
+    incoming: GtkBox,
+    incoming_enter_class: &'static str,
+) {
+    outgoing.remove_css_class(outgoing_exit_class);
+    incoming.remove_css_class(incoming_enter_class);
+    incoming.set_visible(true);
+
+    let outgoing_for_tick = outgoing.clone();
+    incoming.add_tick_callback(move |incoming_widget, _clock| {
+        outgoing_for_tick.add_css_class(outgoing_exit_class);
+        incoming_widget.add_css_class(incoming_enter_class);
+        gtk4::glib::ControlFlow::Break
+    });
+
+    let outgoing_cleanup = outgoing;
+    let incoming_cleanup = incoming;
+    gtk4::glib::timeout_add_local(Duration::from_millis(420), move || {
+        outgoing_cleanup.set_visible(false);
+        outgoing_cleanup.remove_css_class(outgoing_exit_class);
+        incoming_cleanup.remove_css_class(incoming_enter_class);
+        gtk4::glib::ControlFlow::Break
+    });
 }
 
 fn build_ui(app: &Application) {
@@ -50,13 +77,7 @@ fn build_ui(app: &Application) {
         }
         
         .pgone {
-            --color1: rgb(108, 231, 221);
-            --color2: rgb(250, 255, 178);
-            background-color: var(--color1);
-            background-image: linear-gradient(45deg, var(--color2) 25%, transparent 25%, transparent 75%, var(--color2) 75%, var(--color2)), 
-                                linear-gradient(45deg, var(--color2) 25%, var(--color1) 25%, var(--color1) 75%, var(--color2) 75%, var(--color2));
-            background-size: 60px 60px;
-            background-position: 0 0, 30px 30px;  
+            background-color: transparent;
         }
 
         .pgtwo {
@@ -75,8 +96,56 @@ fn build_ui(app: &Application) {
             background-color: #1d4ed8;
         }
 
-        .godown {
-            animation: downdd 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .enter-bottom {
+            animation: enterFromBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes enterFromBottom {
+            from {
+                transform: translate(0px, 2000px);
+            }
+            to {
+                transform: translate(0px, 0px);
+            }
+        }
+
+        .exit-top {
+            animation: exitToTop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes exitToTop {
+            from {
+                transform: translate(0px, 0px);
+            }
+            to {
+                transform: translate(0px, -2000px);
+            }
+        }
+
+        .enter-top {
+            animation: enterFromTop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes enterFromTop {
+            from {
+                transform: translate(0px, -2000px);
+            }
+            to {
+                transform: translate(0px, 0px);
+            }
+        }
+
+        .exit-bottom {
+            animation: exitToBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes exitToBottom {
+            from {
+                transform: translate(0px, 0px);
+            }
+            to {
+                transform: translate(0px, 2000px);
+            }
         }
 
         .page {
@@ -183,28 +252,6 @@ fn build_ui(app: &Application) {
             to {
                 transform: scaleY(1);
                 opacity: 1;
-            }
-        }
-
-        @keyframes downdd {
-            from {
-                transform: translate(0px, -100000px);
-            }
-            to {
-                transform: translate(0px, 0px);
-            }
-        }
-
-        .goup {
-            animation: updd 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes updd {
-            from {
-                transform: translate(0px, 100000px);
-            }
-            to {
-                transform: translate(0px, 0px);
             }
         }
 
@@ -396,18 +443,28 @@ fn build_ui(app: &Application) {
     main.set_cursor_from_name(Some(&"none"));
 
 
+    let pages_overlay = Overlay::new();
+    pages_overlay.set_hexpand(true);
+    pages_overlay.set_vexpand(true);
+    pages_overlay.set_child(Some(&pageone));
+    pages_overlay.add_overlay(&pagetwo);
+    // Stays hidden until Return is pressed, so it doesn't compete with
+    // errorscr for space in the outer vertical box in the meantime.
+    pages_overlay.set_visible(false);
+
     main.append(&errorscr);
-    main.append(&pageone);
-    main.append(&pagetwo);
+    main.append(&pages_overlay);
 
     let controller = gtk4::EventControllerKey::new();
 
     let errorscr_clone = errorscr.clone();
     let pg_clone = pageone.clone();
     let pgt = pagetwo.clone();
+    let pages_overlay_clone = pages_overlay.clone();
     controller.connect_key_pressed(move |_controller, keyval, _keycode, _state| {
         if keyval == gtk4::gdk::Key::Return || keyval == gtk4::gdk::Key::KP_Enter {
             errorscr_clone.set_visible(false);
+            pages_overlay_clone.set_visible(true);
             pg_clone.set_visible(true);
             // std::thread::sleep(Duration::from_secs(2));
             let hbd = hbd.clone();
@@ -420,22 +477,18 @@ fn build_ui(app: &Application) {
             exit(0);
         } else if keyval == gtk4::gdk::Key::Down {
             if pg_clone.get_visible() {
-                pg_clone.set_visible(false);
-                pgt.set_visible(true);
-                pgt.add_css_class("godown");
-                pg_clone.remove_css_class("goup");
+                // pageone slides up and out, pagetwo slides up from below into place
+                animate_switch(pg_clone.clone(), "exit-top", pgt.clone(), "enter-bottom");
             } else {
-                eprint!("bodnwqnewkic");
+                eprintln!("bodnwqnewkic");
             }
             gtk4::glib::Propagation::Stop
         } else if keyval == gtk4::gdk::Key::Up {
             if pgt.get_visible() {
-                pg_clone.set_visible(true);
-                pg_clone.add_css_class("goup");
-                pgt.set_visible(false);
-                pgt.remove_css_class("godown");
+                // pagetwo slides down and out, pageone slides down from above into place
+                animate_switch(pgt.clone(), "exit-bottom", pg_clone.clone(), "enter-top");
             } else {
-                eprint!("bodnwqnewkic");
+                eprintln!("bodnwqnewkic");
             }
             gtk4::glib::Propagation::Stop
         } else {
