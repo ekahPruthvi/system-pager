@@ -1,10 +1,13 @@
 use gtk4::prelude::*;
-use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label, CssProvider, Overlay};
-use gtk4::gdk::Display;
+use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label, CssProvider, Overlay, Picture};
+use gtk4::gdk::{Display, Texture};
 use gtk4_layer_shell::{LayerShell, Layer, Edge};
+use gtk4::gdk_pixbuf::PixbufLoader;
 use std::process::exit;
 use std::{time::Duration};
 use chrono::{Datelike, Local};
+
+mod images;
 
 fn main() {
     let app = Application::builder()
@@ -81,19 +84,11 @@ fn build_ui(app: &Application) {
         }
 
         .pgtwo {
-            background:
-                linear-gradient(135deg, #4f46e5 25%, transparent 25%) -50px 0,
-                linear-gradient(225deg, #4f46e5 25%, transparent 25%) -50px 0,
-                linear-gradient(315deg, #4f46e5 25%, transparent 25%),
-                linear-gradient(45deg, #4f46e5 25%, transparent 25%),
-                linear-gradient(to bottom, #3b82f6 0%, #2563eb 100%);
-            background-size:
-                100px 100px,
-                100px 100px,
-                100px 100px,
-                100px 100px,
-                100% 100%;
-            background-color: #1d4ed8;
+            background-color: #1d4fd800;
+        }
+
+        .pgthree {
+            background-color: #80808000;
         }
 
         .enter-bottom {
@@ -101,7 +96,7 @@ fn build_ui(app: &Application) {
         }
 
         @keyframes enterFromBottom {
-            from {
+            from {rgb(255, 255, 255)rgba(255, 255, 255, 0)
                 transform: translate(0px, 2000px);
             }
             to {
@@ -148,15 +143,63 @@ fn build_ui(app: &Application) {
             }
         }
 
+        .exit-left {
+            animation: exitToLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes exitToLeft {
+            from {
+                transform: translate(0px, 0px);
+            }
+            to {
+                transform: translate(-2000px, 0px);
+            }
+        }
+
+        .enter-right {
+            animation: enterFromRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes enterFromRight {
+            from {
+                transform: translate(2000px, 0px);
+            }
+            to {
+                transform: translate(0px, 0px);
+            }
+        }
+
+        .exit-right {
+            animation: exitToRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes exitToRight {
+            from {
+                transform: translate(0px, 0px);
+            }
+            to {
+                transform: translate(2000px, 0px);
+            }
+        }
+
+        .enter-left {
+            animation: enterFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes enterFromLeft {
+            from {
+                transform: translate(-2000px, 0px);
+            }
+            to {
+                transform: translate(0px, 0px);
+            }
+        }
+
         .page {
-            background: linear-gradient(#3f87a6 10%, #ebf8e1 10%),
-            linear-gradient(to right, #ebf8e100 10%, #c73030 10% 10.2%, #ebf8e100 10.5%);
-            background-size: 100% 25px, 100% 100%;
-            background-repeat: repeat, no-repeat;
             color: black;
-            font-family: 'Brush Script MT', 'Comic Sans MS', cursive;
-            font-size: 18px;
-            line-height: 15px;
+            font-family: FreeMono, monospace;
+            font-style: italic;
+            font-size: 16px;
         }
 
         .jk {
@@ -290,7 +333,7 @@ fn build_ui(app: &Application) {
 
     let today = Local::now().date_naive();
 
-    if today.month() != 7 || today.day() < 4 {
+    if today.month() != 7 || today.day() < 7 {
         eprintln!("Today aint the day gng");
         exit(0);
     }
@@ -414,9 +457,9 @@ fn build_ui(app: &Application) {
     let pagetwo = GtkBox::builder()
         .vexpand(true)
         .hexpand(true)
-        .valign(gtk4::Align::Fill)
+        .valign(gtk4::Align::Center)
         .orientation(Orientation::Vertical)
-        .halign(gtk4::Align::Fill)
+        .halign(gtk4::Align::Center)
         .css_classes(["pgtwo"])
         .spacing(40)
         .visible(false)
@@ -424,7 +467,22 @@ fn build_ui(app: &Application) {
 
     let pagetext = Label::builder()
         .use_markup(true)
-        .label("muah")
+        .label("<b>         Happy birthday my clumsy nigga babyyyyyy!!!</b>
+        
+This will be you'r 3rd birthday we be spending together,
+just remindes me how long we've been dating and how much
+fun its been growing three more years older with you.
+    
+All this time from 11th Jan 2024, we've changed a lot
+and also made a lot of memories together.. I HAVE LOVED 
+ALLL THE TIME I HAVE SPENT WITH YOU.
+
+My baby penglin I want to grow older with u, seeing u do 
+the most stupidest cutest shi and be supportive in all 
+ur dreams. I want to be with u for all the changes in our
+lives. muahhh (if u havn't gone right key yet go back up
+and go right ;) )
+        ")
         .hexpand(true)
         .vexpand(true)
         .halign(gtk4::Align::Center)
@@ -434,7 +492,65 @@ fn build_ui(app: &Application) {
         .css_classes(["page"])
         .build();
 
-    pagetwo.append(&pagetext);
+    let frogyloader = PixbufLoader::new();
+    frogyloader
+        .write(images::FROGGY.as_bytes())
+        .expect("Failed to write SVG data to PixbufLoader");
+    frogyloader
+        .close()
+        .expect("Failed to close PixbufLoader (invalid SVG?)");
+    let froggy_pix = frogyloader
+        .pixbuf()
+        .expect("froggy_pixLoader produced no froggy_pix from SVG");
+    let froggy_tex = Texture::for_pixbuf(&froggy_pix);
+    let frogy = Picture::builder()
+        .paintable(&froggy_tex)
+        .hexpand(true)
+        .vexpand(true)
+        .width_request(200)
+        .height_request(200)
+        .build();
+
+    let ovalay = Overlay::builder()
+        .margin_top(50)
+        .margin_bottom(50)
+        .margin_start(50)
+        .margin_end(50)
+        .build();
+
+    ovalay.set_child(Some(&frogy));
+    ovalay.add_overlay(&pagetext);
+
+    pagetwo.append(&ovalay);
+
+    let pagethree = GtkBox::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .valign(gtk4::Align::Fill)
+        .orientation(Orientation::Vertical)
+        .halign(gtk4::Align::Fill)
+        .css_classes(["pgthree"])
+        .visible(false)
+        .build();
+
+    let collyloader = PixbufLoader::new();
+    collyloader
+        .write(images::COLLY.as_bytes())
+        .expect("Failed to write SVG data to PixbufLoader");
+    collyloader
+        .close()
+        .expect("Failed to close PixbufLoader (invalid SVG?)");
+    let colly_pix = collyloader
+        .pixbuf()
+        .expect("colly_pixLoader produced no colly_pix from SVG");
+    let colly_tex = Texture::for_pixbuf(&colly_pix);
+    let colly = Picture::builder()
+        .paintable(&colly_tex)
+        .hexpand(true)
+        .vexpand(true)
+        .build();
+
+    pagethree.append(&colly);
 
     let main = GtkBox::new(Orientation::Vertical, 0);
     main.set_hexpand(true);
@@ -448,8 +564,7 @@ fn build_ui(app: &Application) {
     pages_overlay.set_vexpand(true);
     pages_overlay.set_child(Some(&pageone));
     pages_overlay.add_overlay(&pagetwo);
-    // Stays hidden until Return is pressed, so it doesn't compete with
-    // errorscr for space in the outer vertical box in the meantime.
+    pages_overlay.add_overlay(&pagethree);
     pages_overlay.set_visible(false);
 
     main.append(&errorscr);
@@ -460,6 +575,7 @@ fn build_ui(app: &Application) {
     let errorscr_clone = errorscr.clone();
     let pg_clone = pageone.clone();
     let pgt = pagetwo.clone();
+    let pgth = pagethree.clone();
     let pages_overlay_clone = pages_overlay.clone();
     controller.connect_key_pressed(move |_controller, keyval, _keycode, _state| {
         if keyval == gtk4::gdk::Key::Return || keyval == gtk4::gdk::Key::KP_Enter {
@@ -477,7 +593,6 @@ fn build_ui(app: &Application) {
             exit(0);
         } else if keyval == gtk4::gdk::Key::Down {
             if pg_clone.get_visible() {
-                // pageone slides up and out, pagetwo slides up from below into place
                 animate_switch(pg_clone.clone(), "exit-top", pgt.clone(), "enter-bottom");
             } else {
                 eprintln!("bodnwqnewkic");
@@ -485,8 +600,21 @@ fn build_ui(app: &Application) {
             gtk4::glib::Propagation::Stop
         } else if keyval == gtk4::gdk::Key::Up {
             if pgt.get_visible() {
-                // pagetwo slides down and out, pageone slides down from above into place
                 animate_switch(pgt.clone(), "exit-bottom", pg_clone.clone(), "enter-top");
+            } else {
+                eprintln!("bodnwqnewkic");
+            }
+            gtk4::glib::Propagation::Stop
+        } else if keyval == gtk4::gdk::Key::Right {
+            if pg_clone.get_visible() {
+                animate_switch(pg_clone.clone(), "exit-left", pgth.clone(), "enter-right");
+            } else {
+                eprintln!("bodnwqnewkic");
+            }
+            gtk4::glib::Propagation::Stop
+        } else if keyval == gtk4::gdk::Key::Left {
+            if pgth.get_visible() {
+                animate_switch(pgth.clone(), "exit-right", pg_clone.clone(), "enter-left");
             } else {
                 eprintln!("bodnwqnewkic");
             }
